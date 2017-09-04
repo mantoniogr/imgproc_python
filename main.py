@@ -9,17 +9,16 @@
 #
 
 import cv2
-import numpy as np
 import functions as f
 import morphology as m
 import time
 
 start_time = time.time()
 
-image = cv2.imread("images/objetos.bmp")
+image = cv2.imread("images/lena.png")
 image_gray = f.rgb2gray(image)
 
-filtered = m.minimos(image_gray)
+filtered = m.dilation(image_gray, 5)
 
 cv2.imshow("Test", image)
 cv2.imshow("Filtered", filtered)
