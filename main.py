@@ -12,6 +12,10 @@ import cv2
 import functions as f
 import morphology as m
 import time
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S', level=logging.DEBUG)
+logging.info('Running basic example')
 
 start_time = time.time()
 
@@ -20,9 +24,9 @@ image_gray = f.rgb2gray(image)
 
 filtered = m.dilation(image_gray, 5)
 
+print("--- %s seconds ---" % (time.time() - start_time))
+
 cv2.imshow("Test", image)
 cv2.imshow("Filtered", filtered)
-
-print("--- %s seconds ---" % (time.time() - start_time))
 
 cv2.waitKey(0)
