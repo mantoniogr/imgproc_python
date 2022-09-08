@@ -275,7 +275,7 @@ def noiseCount(img):
             if (img[j,i,0] == 0):
                 counter = 1 + counter
 
-    print counter
+    print(counter)
     return counter
 
 def highPass(f, g):
