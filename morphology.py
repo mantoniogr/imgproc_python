@@ -228,7 +228,7 @@ def maxima(img):
 
     img_auxiliar = geodesic_dilation(img, img_auxiliar)
     img = img - img_auxiliar
-    img = f.threshold_2(img, 1, 255)
+    img = f.threshold_range(img, 1, 255)
 
     return img
 

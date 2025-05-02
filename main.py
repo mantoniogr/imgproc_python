@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/env python3
 
 #
 #  main.py
@@ -13,16 +13,20 @@ import functions as f
 import morphology as m
 import time
 
-start_time = time.time()
+KERNEL_SIZE = 3
 
-image = cv2.imread("images/lena.png")
-image_gray = f.rgb2gray(image)
+def main():
+    start_time = time.time()
 
-filtered = m.dilation(image_gray, 5)
+    image = cv2.imread("images/lena.png")
+    if image is None:
+        raise FileNotFoundError("Could not load image: images/lena.png")
+    image_gray = f.rgb2gray(image)
 
-cv2.imshow("Test", image)
-cv2.imshow("Filtered", filtered)
+    filtered = m.erosion(image_gray, KERNEL_SIZE)
 
-print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- %s seconds ---" % (time.time() - start_time))
+    cv2.imwrite("images/lena_eroded.png", filtered)
 
-cv2.waitKey(0)
+if __name__ == "__main__":
+    main()

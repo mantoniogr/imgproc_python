@@ -1,4 +1,10 @@
-#!/usr/bin/env
+#!/usr/bin/env python3
+
+"""
+Image processing utility functions for basic operations.
+Includes grayscale conversion, negative image creation,
+thresholding, and object counting.
+"""
 
 #
 #  functions.py
@@ -11,53 +17,70 @@
 import cv2
 import numpy as np
 
-def rgb2gray(image):
-    height, width, channels =  image.shape
-    img = np.zeros([height, width], dtype=np.uint8)
+# RGB weights for grayscale conversion
+RGB_WEIGHTS = np.array([0.114, 0.587, 0.299])
+MAX_PIXEL_VALUE = 255
 
-    for j in range(0, height):
-        for i in range(0, width):
-            img[j,i] = 0.299*image[j,i,2] + 0.587*image[j,i,1] +\
-             0.114*image[j,i,0]
+def rgb2gray(image: np.ndarray) -> np.ndarray:
+    """Convert RGB image to grayscale.
+    
+    Args:
+        image (np.ndarray): Input RGB image array of shape (height, width, 3)
+        
+    Returns:
+        np.ndarray: Grayscale image array of shape (height, width) with uint8 dtype
+    """
+    if image.ndim != 3:
+        raise ValueError("Input image must be a 3-channel RGB image")
+    if image.shape[2] != 3:
+        raise ValueError("Input image must have 3 channels")
+    
+    # Convert to grayscale and ensure uint8 data type
+    return np.dot(image[..., :3], RGB_WEIGHTS).astype(np.uint8)
 
-    return img
+def negative_gray(image: np.ndarray) -> np.ndarray:
+    """Create negative of a grayscale image."""
+    return MAX_PIXEL_VALUE - image
 
-def negative_gray(image):
-    height, width =  image.shape
-    img = np.copy(image)
+def negative_color(image: np.ndarray) -> np.ndarray:
+    """Create negative of a color image."""
+    return MAX_PIXEL_VALUE - image
 
-    for j in range(0, height):
-        for i in  range(0, width):
-            img[j, i] = 255 - image[j, i]
+def threshold(image: np.ndarray, th1: int) -> np.ndarray:
+    """Apply a binary threshold to a grayscale image.
+    
+    Args:
+        image (np.ndarray): Input grayscale image array of shape (height, width)
+        th1 (int): Threshold value (0-255)
+        
+    Returns:
+        np.ndarray: Binary image array of shape (height, width) with uint8 dtype
+    """
+    if image.ndim != 2:
+        raise ValueError("Input image must be a 2D grayscale image")
+    
+    if not (0 <= th1 <= 255):
+        raise ValueError("Threshold value must be in the range [0, 255]")
+    
+    # Create a binary image based on the threshold
+    binary_image = np.where(image > th1, 255, 0).astype(np.uint8)
+    
+    return binary_image
 
-    return img
-
-def negative_color(image):
-    height, width, channels =  image.shape
-    img = np.copy(image)
-
-    for j in range(0, height):
-        for i in  range(0, width):
-            img[j, i, 2] = 255 - image[j, i, 2]
-            img[j, i, 1] = 255 - image[j, i, 1]
-            img[j, i, 0] = 255 - image[j, i, 0]
-
-    return img
-
-def threshold_1(image, th1):
-    height, width =  image.shape
-    img = np.copy(image)
-
-    for j in range(0, height):
-        for i in  range(0, width):
-            if image[j,i] > th1:
-                img[j,i] = 255;
-            else:
-                img[j,i] = 0;
-
-    return img
-
-def threshold_2(image, th1, th2):
+def threshold_range(image: np.ndarray, th1: int, th2: int) -> np.ndarray:
+    """Apply a binary threshold to a grayscale image within a range.
+    
+    Args:
+        image (np.ndarray): Input grayscale image array of shape (height, width)
+        th1 (int): Lower threshold value (0-255)
+        th2 (int): Upper threshold value (0-255)    
+        
+    Returns:
+        np.ndarray: Binary image array of shape (height, width) with uint8 dtype
+    """
+    if image.ndim != 2:
+        raise ValueError("Input image must be a 2D grayscale image")
+    
     height, width =  image.shape
     img = np.copy(image)
 
@@ -70,7 +93,15 @@ def threshold_2(image, th1, th2):
 
     return img
 
-def counting_objects(image):
+def counting_objects(image: np.ndarray) -> tuple[np.ndarray, int]:
+    """Count objects in a binary image.
+    
+    Args:
+        image (np.ndarray): Input binary image array of shape (height, width)
+        
+    Returns:
+        tuple[np.ndarray, int]: Tuple containing the labeled image and the number of objects
+    """
     aux = np.copy(image)
     height, width =  image.shape
 
